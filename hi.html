@@ -5,16 +5,6 @@
   	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.4.2/css/bulma.min.css">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 
-	<style>
-	body div{
-		float: left;
-		display: block;
-		width: 4vw;
-		height: 2em;
-		transition: background-color 20ms ease,transform 1s ease;
-		transform: rotate(0deg);
-	}
-</style>
 
 <title>----</title>
 
@@ -23,38 +13,25 @@
 
 <body>
 
-	<section class="section"><div id='fat' class="container">	
-	<script>
-	for(var zzzz=0; zzzz<1000; zzzz++){
-	        var butbutbut=document.createElement('div');
-		butbutbut.innerHTML='ooh!';
-		butbutbut.addEventListener('mousemove', function(){
-			fml(this);		
-		});
-butbutbut.style.display='block';
-		document.body.appendChild(butbutbut);
-	}
-	fml = function(buTT){
-		if(typeof buTT.bloop=='undefined') // if bloop is not set, start it at 1
-			buTT.bloop=1;
+	<section class="section">
+		<button id="but" type="button" onclick="fml()">click</button>
 
-		var d = new Date();				
-		buTT.bloop=buTT.bloop*-1; // flip  1,-1,1,-1,1...
-		buTT.innerHTML=buTT.bloop==-1?'hello':'hi';
-		buTT.style.backgroundColor='rgb('+(Math.random()*255)+','+(Math.random()*255)+','+(Math.random()*255)+')';
-		buTT.style.transform='rotate('+(Math.random()*180)+'deg) scale(6.0)';
-		buTT.zIndex=10;		
-		setTimeout(function(){
-		   buTT.style.backgroundColor='';//'rgb('+(Math.random()*255)+','+(Math.random()*255)+','+(Math.random()*255)+')';
-			buTT.zIndex=0;
-			buTT.innerHTML='wut?';
-			buTT.style.transform='rotate(0deg)';
-		},1000);	
-	};		
-			
-</script>
-</div>			
 
+		<div id='fat' class="container">
+			<script>
+				fml = function(){				
+				var d = new Date();
+				document.getElementById("fat").innerHTML = d;
+				but.addEventListener('click', function(){
+				
+						document.getElementById("fat").innerHTML = "HI";
+				});
+			}
+			</script>
+			<h1 class="title">
+			HI
+			</h1>
+		</div>
 
 	</section>
 </body>
