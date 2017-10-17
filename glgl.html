@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel='stylesheet' href='../webgl/css' type='text/css'>
+	<style>
+		body {
+			border: 0;
+			background-color: white;
+		}
+		#thecanvas {
+			width: 100vw;
+			height: 100vw;
+			display: block;
+		}
+	</style>
+</head>
+<body>
+
+<script type='glsl' id='vsSource'>
+	attribute vec2 aVertexPosition;
+	uniform float uTime;
+	varying float vTime; 
+	uniform vec2 uMouse;
+	uniform vec2 uResolution;
+
+	void main(){ 
+		vTime=(uTime*2.0)-1.0;
+		vec2 scaledP=((aVertexPosition.xy/uResolution)*2.0)-1.0;
+//		newPosition.x=(uMouse.x*2.0)-1.0;//(cos((1.0-hPos)*3.141592)*uMouse.x);//(hPos*2.0)-1.0;
+	//	newPosition.y=((uMouse.y*2.0)-1.0)*-1.0;//(sin((1.0-hPos)*3.141592)*uMouse.y);
+		scaledP.x*=(cos(scaledP.x*3.14)*2.0)-1.0;
+		scaledP.y*=(cos(scaledP.y*3.14)*2.0)-1.0;
+		gl_Position=vec4(scaledP,-1.0,1.0);
+		gl_PointSize=(10.0);//(100.0*vTime)+1.0;
+	}
+</script>
+<script type='glsl' id='fsSource'>
+	precision mediump float;
+	uniform vec4 uFragColor; //1UNIFORM
+	varying float vTime;
+
+	void main(){
+		vec3 tempColor=vec3(uFragColor);
+		tempColor.r=abs(sin(vTime))+0.2;
+		tempColor.b=abs(sin(1.0-vTime))+0.2;
+		
+		gl_FragColor=vec4(tempColor,1.0);
+	}
+</script>
+<canvas id='thecanvas'></canvas>
+
+<script type="text/javascript">
+//BUFFER
+var moveX=0,moveY=0;
+function setupPolygons(_gl,_programInfo, time){
+    	gl.bufferData(gl.ARRAY_BUFFER,programInfo.arrayData, gl.STATIC_DRAW);
+	//for(var pointI=0; pointI<pointCount*2; pointI+=2){
+	//	programInfo.arrayData[pointI]=((moveX/window.innerWidth*2)-1)+((Math.random()*0.5)-0.25);// x coord
+	//	programInfo.arrayData[pointI+1]=(((1-(moveY/window.innerHeight))*2)-1)+((Math.random()*0.5)-0.25);// y coord
+	//}
+
+    // Tell the attribute how to get data out of positionBuffer (ARRAY_BUFFER)
+	var u_time=(time%10)/10;
+  	_gl.enableVertexAttribArray(programInfo.attribLocations.vertexPosition);
+     
+    var numComponents = 2;  // (x, y, z)
+    var type = gl.FLOAT;    // 32bit floating point values
+    var normalize = false;  // leave the values as they are
+    var offset = 0;         // start at the beginning of the buffer
+    var stride = 0;         // how many bytes to move to the next vertex
+                            // 0 = use the correct stride for type and numComponents
+     
+	_gl.uniform2f(_programInfo.uniformLocations.resolutionPosition, window.innerWidth, window.innerHeight);
+    _gl.vertexAttribPointer(_programInfo.attribLocations.vertexPosition, numComponents, type, false, stride, offset);
+	//_gl.vertexAttrib2f(_programInfo.attribLocations.vertexPosition, 0.0, 0.0);
+	_gl.uniform4f(_programInfo.uniformLocations.colorPosition, 1.0, 0.0, 0.0, 1.0);
+	_gl.uniform1f(_programInfo.uniformLocations.timePosition, u_time);
+	//_gl.uniform2f(_programInfo.uniformLocations.mousePosition, ???????);
+	//carry on herrrreeeee....	
+	_gl.uniform2f(_programInfo.uniformLocations.mousePosition, moveX/window.innerWidth, moveY/window.innerHeight);
+}
+
+//setup the Polygons! These variables are pretty certainly all already things in gl 
+var gl=undefined,programInfo=undefined,pointCount=24;
+function draw(t){
+	setupPolygons(gl,programInfo,t); //what sig do the parameter names have? gl is a thing in the global scope...
+	//gl.clear(gl.COLOR_BUFFER_BIT);
+	gl.drawArrays(gl.TRIANGLES, 0, pointCount);
+	requestAnimationFrame(draw);
+}
+var someData=[
+	0.0,0.0,
+	1.0,0.5,
+	0.75,0.5,
+	0.75,1.0,
+	0.0,0.0,
+	1.0,0.5,
+	0.75,0.5,
+	0.75,1.0,
+	0.0,0.0,
+	1.0,0.5,
+	0.75,0.5,
+	0.75,1.0,
+	0.0,0.0,
+	1.0,0.5,
+	0.75,0.5,
+	0.75,1.0,
+	0.0,0.0,
+	1.0,0.5,
+	0.75,0.5,
+	0.75,1.0,
+	0.0,0.0,
+	1.0,0.5,
+	0.75,0.5,
+	0.75,1.0
+];
+
+//MAIN canvas, webgl context
+function main(){
+	var canvas = document.getElementById('thecanvas');
+		
+
+	var opts={ //antialias: true,
+				 	preserveDrawingBuffer: true,
+                   depth: false 
+};
+	gl = canvas.getContext('webgl',opts) || 
+		 canvas.getContext('experimental-webgl',opts);
+	if (!gl){ 
+		throw new Error('browser may not support webgl');
+		}	
+//MAIN clear canvas
+	gl.clearColor(0.0, 0.0, 0.0, 1.0);
+	gl.clear(gl.COLOR_BUFFER_BIT);
+
+//new function links shaders+variables(webgl context, shader source 1 + 2)
+	var vsSource=document.getElementById('vsSource').innerText,
+	    fsSource=document.getElementById('fsSource').innerText;
+	
+	const shaderProgram=initShaderProgram(gl, vsSource,fsSource);
+		programInfo={
+			program: shaderProgram,
+			attribLocations:{
+				vertexPosition: gl.getAttribLocation(shaderProgram, 'aVertexPosition')	
+			},
+			uniformLocations:{
+				colorPosition: gl.getUniformLocation(shaderProgram, 'uFragColor'),
+				timePosition: gl.getUniformLocation(shaderProgram, 'uTime'),
+				mousePosition: gl.getUniformLocation(shaderProgram, 'uMouse'),
+				resolutionPosition: gl.getUniformLocation(shaderProgram, 'uResolution')			
+			},
+			buffers:{
+				pointArray: gl.createBuffer()
+			},
+			arrayData: new Float32Array(someData)
+		};
+
+    	gl.bindBuffer(gl.ARRAY_BUFFER,programInfo.buffers.pointArray);
+    	gl.bufferData(gl.ARRAY_BUFFER,programInfo.arrayData, gl.STATIC_DRAW);
+
+	gl.useProgram(shaderProgram);
+	canvas.addEventListener('mousemove',function(ev){
+		moveX=ev.clientX;
+		moveY=ev.clientY;
+		someData.pop();
+		someData.pop();
+		someData.unshift(moveY);
+		someData.unshift(moveX);
+		programInfo.arrayData=new Float32Array(someData);
+	});
+
+
+	requestAnimationFrame(draw);
+		resize(gl.canvas);
+		gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+}
+
+function resize(canvas) {
+			var displayWidth = canvas.clientWidth;
+			var displayHeight = canvas.clientHeight;
+
+			if(canvas.width != displayWidth || canvas.height != displayHeight) {
+				canvas.width = displayWidth;
+				canvas.height = displayHeight;
+			}
+	}
+
+function initShaderProgram(_gl, vs, fs) {
+	const vertShader = loadShader(_gl, _gl.VERTEX_SHADER, vs);
+	const fragShader = loadShader(_gl, _gl.FRAGMENT_SHADER, fs);
+	
+	const shaderProg=_gl.createProgram();
+	_gl.attachShader(shaderProg, vertShader);
+	_gl.attachShader(shaderProg, fragShader);
+	_gl.linkProgram(shaderProg);
+
+	if(!_gl.getProgramParameter(shaderProg, _gl.LINK_STATUS)){
+		alert('unable to initialise the shader program: ' + _gl.getProgramInfoLog(shaderProg));
+	return null;
+	}
+return shaderProg;
+}
+
+
+
+function loadShader(_gl, type, source){
+	const shader = _gl.createShader(type);	
+	_gl.shaderSource(shader, source);
+	_gl.compileShader(shader);
+
+	if (!_gl.getShaderParameter(shader, _gl.COMPILE_STATUS)) {
+		alert('An error' + _gl.getShaderInfoLog(shader));
+		_gl.deleteShader(shader);
+	return null;
+	}
+
+return shader;
+}
+
+
+main();
+
+</script>
+
+</body>
+</html>

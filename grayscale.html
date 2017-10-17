@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+#pixelbucket body {
+padding=0px;
+	}
+</style>
+</head>
+<body>
+<canvas id='pixelbucket' width='1000' height='600' ></canvas>
+
+<button id='invertbtn'> 
+invert
+</button>
+<button id='grayscalebtn'>
+grayscale
+</button>
+<script>
+ var canvas = document.getElementById('pixelbucket');
+var img = new Image();
+img.src = 'hippo.png';
+
+img.onload = function() {
+  draw(this);
+var self=this;
+canvas.addEventListener('click', function(){
+draw(self);
+});
+};
+
+
+
+function draw(img) {
+ 
+  var ctx = canvas.getContext('2d');
+  ctx.drawImage(img, 0, 0);
+  img.style.display = 'none';
+  var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  var data = imageData.data;
+var getIndexForXY=function(x,y){
+	return ((y*4)*imageData.width)+(x*4);
+};    
+  var invert = function(hitX,hitY) {
+var mouseIndex=getIndexForXY(hitX,hitY);
+	
+data[mouseIndex]=255;
+data[mouseIndex+1]=0;
+data[mouseIndex+2]=0;
+ctx.putImageData(imageData, 0, 0);		
+return;
+	for(var dataY=0; dataY<imageData.height; dataY++){
+	  for(var dataX=0; dataX<imageData.width; dataX++){		
+	   var index=getIndexForXY(dataX,dataY); // pixel at x,y
+	   data[index] = (dataY==hitY?255:0) // red
+ 	   data[index + 1] = (dataX==hitX?255:0);//255 - data[index + 1]; // green
+	   data[index + 2] = 0;//255 - data[index + 2]; // blue			
+	  }
+	}
+    ctx.putImageData(imageData, 0, 0);
+  };
+
+  var grayscale = function() {
+    for (var i = 0; i < data.length; i += 4) {
+      var avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
+      data[i]     = avg; // red
+      data[i + 1] = avg; // green
+      data[i + 2] = avg; // blue
+    }
+    ctx.putImageData(imageData, 0, 0);
+  };
+	canvas.onmousemove=function(ev){
+		invert(ev.clientX,ev.clientY);
+console.log(ev);
+	};
+  //var invertbtn = document.getElementById('invertbtn');
+  //invertbtn.addEventListener('click', invert);
+  var grayscalebtn = document.getElementById('grayscalebtn');
+  grayscalebtn.addEventListener('click', grayscale);
+}
+
+</script>
+</body>
+</html>

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en" class="route-documentation">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="it is a descriptioin">
+
+  <title>Test</title>
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.4.2/css/bulma.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.js" integrity="sha256-jCRPoAgIIooCTnLmaSyKMPrFgFh6/T0e8c3i+KkZZ6U=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.3.3/backbone.js" integrity="sha256-JN0u7081AU4SZiikD1KKHSSBk/BNVFiTE95qK++aB6Y=" crossorigin="anonymous"></script>
+<script src="Box2D.js" crossorigin="anonymous"></script>
+
+  <meta name="theme-color" content="#00d1b2">
+	<style>
+	body{
+		font-size: 60px;
+		background-color: #111;
+		min-height: 100vh;
+	}
+	.navbar{
+		background-color: #333;
+		font-size: 2em;
+		color: #fccece;
+	}
+	#content{
+		background-color: #fccece;
+	}
+	</style>
+</head>
+
+  <body class="layout-documentation page-layout">
+    
+
+	<div class="container">
+	<nav class="navbar ">
+		nav test
+	</nav>
+	<div class="container" id="content">
+	test
+	</div>
+	</div>
+	<script>
+	window.onload=function(){
+		var loop=0,b=0,a=[1,2,3,4,5,6,7,8,9];
+		// if you see loads of alert boxes it's because lodash library is working
+		var wordArry=['yes','maybe','yes','maybe','no','yes','no','yes','no','yes','yes'];
+		var totalMap=_.map(wordArry,function(a){
+			return (a=='yes'?1:(a=='no'?-1:0));
+		});
+		//console.log(wordArry);
+		//console.log(totalMap);
+		var total=totalMap.reduce(function(runningTotal,currentIndexObject){
+			return runningTotal+currentIndexObject;
+		});
+
+		//console.log('total',total>0?'yes':total<0?'no':'maybe',total);
+		const PI=3.14159265;
+		var elem = document.getElementById('content');
+		var can = document.createElement('canvas');
+		elem.appendChild(can);
+		can.width=1152;
+		can.height=400;
+		var con = can.getContext('2d');
+		//con.fillStyle='#f0f';
+		var valList=[1,2,3,4,5,6,7,8,9,10,11,12];
+
+		var getPointOnLine=function(loop){
+		return can.height-Math.abs(Math.abs(Math.cos(loop/can.height))*2*Math.sin(((loop/can.width)*Math.tan(loop/can.width))*PI*Math.tan(loop/can.width)))*can.height/2;
+		}
+
+	//	window.onmousemoveold=function(ev){
+			con.beginPath();
+		con.moveTo(0,can.height);
+		con.strokeStyle='#000';		
+	for(var z=0; z<10; z+=2.5)	
+		for(var k=0; k<can.width; k+=0.1)	
+			con.lineTo(k,getPointOnLine(z*k));			
+		con.stroke();
+		con.closePath();
+		
+
+var world;
+var bodyList=[];
+      
+      function init() {
+         var   b2Vec2 = Box2D.Common.Math.b2Vec2
+         	,	b2BodyDef = Box2D.Dynamics.b2BodyDef
+         	,	b2Body = Box2D.Dynamics.b2Body
+         	,	b2FixtureDef = Box2D.Dynamics.b2FixtureDef
+         	,	b2Fixture = Box2D.Dynamics.b2Fixture
+         	,	b2World = Box2D.Dynamics.b2World
+         	,	b2MassData = Box2D.Collision.Shapes.b2MassData
+         	,	b2PolygonShape = Box2D.Collision.Shapes.b2PolygonShape
+         	,	b2CircleShape = Box2D.Collision.Shapes.b2CircleShape
+         	,	b2DebugDraw = Box2D.Dynamics.b2DebugDraw
+            ;
+         
+         world = new b2World(
+               new b2Vec2(0, 10)    //gravity
+            ,  true                 //allow sleep
+         );
+         
+         var fixDef = new b2FixtureDef;
+         fixDef.density = 1.0;
+         fixDef.friction = 0.5;
+         fixDef.restitution = 0.2;
+         
+         var bodyDef = new b2BodyDef;
+         
+         //create ground
+         bodyDef.type = b2Body.b2_staticBody;
+         bodyDef.position.x = 9;
+         bodyDef.position.y = 13;
+         fixDef.shape = new b2PolygonShape;
+         fixDef.shape.SetAsBox(10, 0.5);
+         world.CreateBody(bodyDef).CreateFixture(fixDef);
+         
+         //create some objects
+         bodyDef.type = b2Body.b2_dynamicBody;
+         for(var i = 0; i < 10; ++i) {
+            if(Math.random() > 0.5) {
+               fixDef.shape = new b2PolygonShape;
+               fixDef.shape.SetAsBox(
+                     Math.random() + 0.1 //half width
+                  ,  Math.random() + 0.1 //half height
+               );
+            } else {
+               fixDef.shape = new b2CircleShape(
+                  Math.random() + 0.1 //radius
+               );
+            }
+            bodyDef.position.x = Math.random() * 10;
+            bodyDef.position.y = Math.random() * 10;
+var bodyThing=world.CreateBody(bodyDef);
+            bodyList.push(bodyThing);
+		bodyThing.CreateFixture(fixDef);
+         }
+         console.log('bodylist`',bodyList);
+         window.setInterval(update, 1000 / 60);
+      };
+      var looper=0;
+      function update() {
+         world.Step(
+               1 / 60   //frame-rate
+            ,  10       //velocity iterations
+            ,  10       //position iterations
+         );
+if(looper<100){
+	console.log('iteration',looper++);
+	for(var zool=0; zool<bodyList.length; zool++){
+		var bod=bodyList[zool].GetPosition();
+		console.log('b',zool,bod.x,bod.y);	
+	}
+}
+         world.ClearForces();
+      };
+init();
+
+	};
+	</script>
+</body>
+</html>
